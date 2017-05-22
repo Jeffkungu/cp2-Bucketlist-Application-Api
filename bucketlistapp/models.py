@@ -1,7 +1,10 @@
 # import db connection
-from app import db
-import datetime
+from bucketlistapp import db
+from datetime import datetime, timedelta
 from flask_bcrypt import Bcrypt
+from flask import current_app
+import jwt
+
 
 
 class User(db.Model):
@@ -36,6 +39,26 @@ class User(db.Model):
         """
         db.session.add(self)
         db.session.commit()
+
+    def get_authentication_token(self, user_id):
+        """ Generates the access token"""
+
+        try:
+            payload = {
+                'iat': datetime.utcnow(),
+                'exp': datetime.utcnow() + timedelta(seconds=360),
+                'sub': user_id
+            }
+            encoded_jwt = jwt.encode(
+                payload,
+                current_app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+            return encoded_jwt
+
+        except Exception as error:
+            return str(error)    
+
 
 class Bucketlist(db.Model):
     """Create bucketlist table."""
@@ -91,21 +114,19 @@ class BucketListItem(db.Model):
                         primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(500))
-    date_created = db.Column(db.DateTime, default=datetime.datetime.now)
-    date_modified = db.Column(db.DateTime, default=datetime.datetime.now,
-                              onupdate=datetime.datetime.now)
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    date_modified = db.Column(db.DateTime, default=datetime.now,
+                              onupdate=datetime.now)
     status = db.Column(db.Boolean, default=False)
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey(
-                                                'bucketlist.bucketlist_id',
-                                                onupdate="CASCADE",
-                                                ondelete="CASCADE"),
-                              nullable=False)
+    # bucketlist_id = db.Column(db.Integer, db.ForeignKey(
+    #                                             'bucketlist.bucketlists_id',
+    #                                             onupdate="CASCADE",
+    #                                             ondelete="CASCADE"),
+    #                           nullable=False)
 
     def __init__(self, name, description, status, bucketlist_id):
         self.name = name
         self.description = description
         self.status = status
-        self.bucketlist_id = bucketlist_id                          
-
-
+        # self.bucketlist_id = bucketlist_id                          
 
