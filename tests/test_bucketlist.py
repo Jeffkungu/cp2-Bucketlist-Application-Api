@@ -196,7 +196,7 @@ class BucketlistTestCase(unittest.TestCase):
         Creates bucketlist and tests for (201-created) status code response
         Tries to delet a bucketlist item that was not created and checks for (404-notfound) status code response
         """
-        method = self.client().post("/bucketlists/", data=self.bucketlist)
+        method = self.client().post("/bucketlists/1/items/1", data=self.bucketlist)
         self.assertEqual(method.status_code, 201)
         delet = self.client().delete('/bucketlists/1/items/125')
         self.assertEqual(delet.status_code, 404)

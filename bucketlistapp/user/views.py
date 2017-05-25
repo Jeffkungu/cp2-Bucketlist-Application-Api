@@ -3,6 +3,7 @@ from bucketlistapp.models import User
 from flask.views import MethodView
 from flask import make_response, request, jsonify
 
+
 class UserRegistration(MethodView):
     '''Define a class based view for user registration method'''
 
@@ -19,7 +20,8 @@ class UserRegistration(MethodView):
                 post_data = request.data
                 email = post_data['email']
                 password = post_data['password']
-                check_user = User(email=email, password=password)
+                username = post_data['username']
+                check_user = User(email=email, password=password, username=username)
                 check_user.save()
 
                 response = {
@@ -37,12 +39,6 @@ class UserRegistration(MethodView):
             }
             return make_response(jsonify(response)), 202
 
-# user_registration = UserRegistration.as_view('register_user')
-# blueprint.add_url_rule(
-#     '/auth/register',
-#     view_func=user_registration,
-#     methods=['POST'])
-
 
 class UserLogin(MethodView):
     '''Define a class based view for user login method'''
@@ -54,11 +50,10 @@ class UserLogin(MethodView):
         '''
 
         try:
-            fetch_user = User.query.filter_by(email=request.data['email']).first()
+            fetched_user = User.query.filter_by(email=request.data['email']).first()
+            if fetched_user and fetched_user.validate_password(request.data['password']):
+                gen_token = fetched_user.get_authentication_token((fetched_user.id))
 
-            if fetch_user and fetch_user.validate_password(request.data['password']):
-                gen_token = fetch_user.get_authentication_token(fetch_user.id)
-                
                 if gen_token:
                     response = {
                         'message': 'Log-in Successfull.',

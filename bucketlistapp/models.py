@@ -19,9 +19,10 @@ class User(db.Model):
     bucketlist = db.relationship('Bucketlist', order_by='Bucketlist.id',
                                   cascade='all, delete-orphan')
 
-    def __init__(self, email, password):
+    def __init__(self, username, email, password):
         """Initialize user with email and password."""
 
+        self.username = username
         self.email = email
         self.password = Bcrypt().generate_password_hash(password).decode()
 
@@ -46,18 +47,32 @@ class User(db.Model):
         try:
             payload = {
                 'iat': datetime.utcnow(),
-                'exp': datetime.utcnow() + timedelta(seconds=360),
+                'exp': datetime.utcnow() + timedelta(seconds=3600),
                 'sub': user_id
             }
             encoded_jwt = jwt.encode(
                 payload,
-                current_app.config.get('SECRET_KEY'),
+                current_app.config.get('SECRET'),
                 algorithm='HS256'
             )
             return encoded_jwt
 
         except Exception as error:
-            return str(error)    
+            return str(error)
+
+    @staticmethod
+    def decode_token(token):
+        """Decodes the access token from the Authorization header."""
+        try:
+            # try to decode the token using our SECRET variable
+            payload = jwt.decode(token, current_app.config.get('SECRET'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            # the token is expired, return an error string
+            return "Expired token. Please login to get a new token"
+        except jwt.InvalidTokenError:
+            # the token is invalid, return an error string
+            return "Invalid token. Please register or login"        
 
 
 class Bucketlist(db.Model):
@@ -71,6 +86,8 @@ class Bucketlist(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
+    items = db.relationship('BucketListItem', backref="bucketlists",
+                                   cascade="all, delete")
     created_by = db.Column(db.Integer, db.ForeignKey(User.id))    
 
     def __init__(self, name, created_by):
@@ -110,23 +127,43 @@ class BucketListItem(db.Model):
 
     __tablename__ = 'bucketlistitem'
 
-    item_id = db.Column(db.Integer, autoincrement=True,
+    id = db.Column(db.Integer, autoincrement=True,
                         primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    description = db.Column(db.String(500))
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, default=datetime.now,
                               onupdate=datetime.now)
-    status = db.Column(db.Boolean, default=False)
-    # bucketlist_id = db.Column(db.Integer, db.ForeignKey(
-    #                                             'bucketlist.bucketlists_id',
-    #                                             onupdate="CASCADE",
-    #                                             ondelete="CASCADE"),
-    #                           nullable=False)
+    done = db.Column(db.Boolean, default=False)
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey(
+                                                'bucketlists.id',
+                                                onupdate="CASCADE",
+                                                ondelete="CASCADE"),
+                              nullable=False)
 
-    def __init__(self, name, description, status, bucketlist_id):
+    def __init__(self, name, bucketlist_id):
         self.name = name
-        self.description = description
-        self.status = status
-        # self.bucketlist_id = bucketlist_id                          
+        self.bucketlist_id = bucketlist_id
 
+    def save(self):
+        '''
+        Adds a new bucketlist item to the data base
+        Updatees an existing bucketlist item
+        '''
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        '''Deletes existing bucketlist item from db'''
+        db.session.delete(self)
+        db.session.commit()    
+
+
+    @staticmethod
+    def get_all():
+        '''Gets all bucketlists created by a specific user in a single query'''
+        return BucketListItem.query.filter_by(bucketlist_id=bucketlist_id)
+
+
+    def __repr__(self):
+        '''Represents object instance of the model whenever it is queried'''
+        return "<Bucketlist: {}>".format(self.name)                          
