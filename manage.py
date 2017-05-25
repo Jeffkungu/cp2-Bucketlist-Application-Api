@@ -20,7 +20,11 @@ manager.add_command('db', MigrateCommand)
 #     if result.wasSuccessful():
 #         return 0
 #     return 1
+def create_db(dbname):
+    os.system("createdb " + dbname)
 
+def drop_db(dbname):
+    os.system("dropdb " + dbname)
     
 if __name__ == '__main__':
     manager.run()
