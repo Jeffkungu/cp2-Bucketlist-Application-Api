@@ -53,7 +53,6 @@ class UserLogin(MethodView):
             fetched_user = User.query.filter_by(email=request.data['email']).first()
             if fetched_user and fetched_user.validate_password(request.data['password']):
                 gen_token = fetched_user.get_authentication_token((fetched_user.id))
-
                 if gen_token:
                     response = {
                         'message': 'Log-in Successfull.',

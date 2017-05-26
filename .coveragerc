@@ -27,3 +27,8 @@ omit =
     *bcrypt*
     *jwt*
     *psycopg2*
+    *_LWPCookieJar.py
+    *_MozillaCookieJar.py
+    *cookielib.py
+    *encodings/*
+    *stringprep.py

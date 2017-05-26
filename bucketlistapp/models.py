@@ -54,7 +54,8 @@ class User(db.Model):
                 payload,
                 current_app.config.get('SECRET'),
                 algorithm='HS256'
-            )
+            ).decode("utf-8")
+
             return encoded_jwt
 
         except Exception as error:
@@ -86,8 +87,7 @@ class Bucketlist(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    items = db.relationship('BucketListItem', backref="bucketlists",
-                                   cascade="all, delete")
+    items = db.relationship('BucketListItem', cascade="merge, save-update, delete", uselist=True)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id))    
 
     def __init__(self, name, created_by):
@@ -127,7 +127,7 @@ class BucketListItem(db.Model):
 
     __tablename__ = 'bucketlistitem'
 
-    id = db.Column(db.Integer, autoincrement=True,
+    item_id = db.Column(db.Integer, autoincrement=True,
                         primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
