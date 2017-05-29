@@ -1,6 +1,5 @@
 import os.path
 import sys
-import flask_sqlalchemy
 
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
@@ -22,7 +21,7 @@ def create_app(config_name):
     db.init_app(app)
 
     
-    @app.route('/bucketlists/', methods=['POST', 'GET'])
+    @app.route('/api/v1/bucketlists/', methods=['POST', 'GET'])
     def create_andget_bucketlists():
         '''
         Creates new bucketlist
@@ -47,7 +46,7 @@ def create_app(config_name):
                                 response = jsonify({
                                     "message": "The named bucketlist already exists"
                                 })
-                                return make_response(response), 400
+                                return make_response(response), 409
 
                             bucketlist = Bucketlist(
                                 name=bucketlist_name, created_by=user)
@@ -87,20 +86,20 @@ def create_app(config_name):
                         fetch_bucketlists = fetch_bucketlists_object.items
 
                         if fetch_bucketlists_object.has_next:
-                            nextpage = "/bucketlists/?page=" + \
+                            nextpage = "/api/v1/bucketlists/?page=" + \
                                 str(page + 1) + "&limit=" + str(limit)
                         else:
                             nextpage = None
 
                         if fetch_bucketlists_object.has_prev:
-                            previouspage = "/bucketlists/?page=" + \
+                            previouspage = "/api/v1/bucketlists/?page=" + \
                                 str(page - 1) + "&limit=" + str(limit)
                         else:
                             previouspage = None
 
                         if request.args.get('q'):
                             q = str(request.args.get('q')).lower()
-                            fetch_bucketlists_object = Bucketlist.query.filter(Bucketlist.name.like('%{}%'.format(q))).filter_by(
+                            fetch_bucketlists_object = Bucketlist.query.filter(Bucketlist.name.ilike('%{}%'.format(q))).filter_by(
                                 created_by=user).paginate(page, limit, False)
 
                         if fetch_bucketlists:
@@ -137,7 +136,7 @@ def create_app(config_name):
                             response = jsonify({
                                 "message": "There are no bucketlists."
                             })
-                            return make_response(response), 400
+                            return make_response(response), 404
 
                     except Exception as error:
                         response = {
@@ -151,7 +150,7 @@ def create_app(config_name):
                 }
                 return make_response(jsonify(response)), 401
 
-    @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/api/v1/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def get_andupdate_bucketlistid(id, **kwargs):
         '''
         Retrieves a bucketlist using its id.
@@ -182,7 +181,7 @@ def create_app(config_name):
                     return response
 
                 if request.method == 'PUT':
-                    bucketlist_name = str(request.data.get('name', ''))
+                    bucketlist_name = str(request.data.get('name'))
                     bucketlist.name = bucketlist_name
                     bucketlist.save()
                     response = jsonify({
@@ -206,7 +205,7 @@ def create_app(config_name):
                 }
                 return make_response(jsonify(response)), 401
 
-    @app.route('/bucketlists/<int:id>/items', methods=['POST', 'GET'])
+    @app.route('/api/v1/bucketlists/<int:id>/items', methods=['POST', 'GET'])
     def create_andget_bucketlistsitems(id, **kwargs):
         '''
         Creates bucketlist items.
@@ -251,7 +250,7 @@ def create_app(config_name):
                 else:
                     abort(400)
 
-    @app.route('/bucketlists/<int:id>/items/<int:item_id>', methods=['PUT', 'DELETE'])
+    @app.route('/api/v1/bucketlists/<int:id>/items/<int:item_id>', methods=['PUT', 'DELETE'])
     def get_andupdate_bucketlistsitems(id, item_id, **kwargs):
         '''
         Retrieves a bucketlist item using its id.
@@ -275,7 +274,7 @@ def create_app(config_name):
                     response = jsonify({
                             "message": "Error, No bucketlist with such ID."
                     })
-                    return make_response(response), 400
+                    return make_response(response), 404
                 else:
                     bucketlist_item = BucketListItem.query.filter_by(
                         item_id=item_id).first()
@@ -284,7 +283,7 @@ def create_app(config_name):
                     response = jsonify({
                             "message": "Error, No bucketlist item with such ID."
                     })
-                    return make_response(response), 400
+                    return make_response(response), 404
                     # abort(404)
 
                 if request.method == 'PUT':
