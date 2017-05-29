@@ -248,7 +248,76 @@ def create_app(config_name):
                         }
                         return make_response(jsonify(response)), 401
                 else:
-                    abort(400)
+                    try:
+                        if request.args.get("page"):
+                            page = int(request.args.get("page"))
+                        else:
+                            page = 1
+                        if request.args.get("limit") and int(request.args.get("limit")) < 100:
+                            limit = int(request.args.get("limit"))
+                        else:
+                            limit = 20
+
+                        fetch_bucketlists_object = Bucketlist.query.filter_by(
+                            created_by=user).paginate(page, limit, False)
+                        fetch_bucketlists = fetch_bucketlists_object.items
+
+                        if fetch_bucketlists_object.has_next:
+                            nextpage = "/api/v1/bucketlists/<int:id>/items?page=" + \
+                                str(page + 1) + "&limit=" + str(limit)
+                        else:
+                            nextpage = None
+
+                        if fetch_bucketlists_object.has_prev:
+                            previouspage = "/api/v1/bucketlists/<int:id>/items?page=" + \
+                                str(page - 1) + "&limit=" + str(limit)
+                        else:
+                            previouspage = None
+
+                        if request.args.get('q'):
+                            q = str(request.args.get('q')).lower()
+                            fetch_bucketlists_object = Bucketlist.query.filter(Bucketlist.name.ilike('%{}%'.format(q))).filter_by(
+                                created_by=user).paginate(page, limit, False)
+
+                        if fetch_bucketlists:
+                            for bucketlist in fetch_bucketlists:
+                                items_list = []
+                                if bucketlist.items:
+                                    for item in bucketlist.items:
+                                        item_data = {
+                                            'id': item.item_id,
+                                            'name': item.name,
+                                            'date_created': item.date_created,
+                                            'date_modified': item.date_modified,
+                                            'done': item.done
+                                        }
+                                        items_list.append(item_data)
+                                    response = {
+                                        "nextpage": nextpage,
+                                        "Previouspage": previouspage,
+                                        "Data": items_list
+                                    }
+                                    return make_response(jsonify(response)), 200
+                                else:
+                                    response = jsonify({
+                                        "message": "There are no items."
+                                    })
+                                    return make_response(response), 404
+                        else:
+                            response = jsonify({
+                                "message": "There are no bucketlists."
+                            })
+                            return make_response(response), 404
+                    except Exception as error:
+                        response = {
+                            'message': str(error)
+                        }
+                        return make_response(jsonify(response)), 401
+           
+            else:
+                abort(400)
+        else:
+            abort(400)
 
     @app.route('/api/v1/bucketlists/<int:id>/items/<int:item_id>', methods=['PUT', 'DELETE'])
     def get_andupdate_bucketlistsitems(id, item_id, **kwargs):
