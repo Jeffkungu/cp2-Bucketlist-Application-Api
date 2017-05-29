@@ -24,7 +24,6 @@ class BucketlistTestCase(unittest.TestCase):
         response_data = json.loads(response.data.decode())
         self.auth_token = response_data['access_token']
 
-
     def test_create_buketlists(self, name="bucket_name"):
         """Tests if API can create a bucketlist (POST request)"""
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
@@ -32,7 +31,7 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         self.assertIn('Visit London UK', str(method.data))
-        
+
     def test_create_buketlists_with_no_name(self):
         """
         Tests if API can create a bucketlist whose name has no value(POST request)
@@ -60,7 +59,7 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertIn('Visit London and Paris', str(new_method.data))
 
         result = self.client().get('/api/v1/bucketlists/1',
-                                    headers={'Authorization': self.auth_token})
+                                   headers={'Authorization': self.auth_token})
         self.assertIn('Visit London and Paris', str(result.data))
 
     #
@@ -77,8 +76,8 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 201)
 
     def test_add_item_into_nonexisting_bucketlist(self):
@@ -92,8 +91,8 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         item = {"name": "Travel"}
         new_method = self.client().post('/api/v1/bucketlists/2/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 401)
 
     def test_update_nonexisting_bucketlists(self):
@@ -108,10 +107,10 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         self.assertIn('Visit London UK', str(method.data))
 
-        self.new_details  = json.dumps({"name": 'Visit London and Paris'})
+        self.new_details = json.dumps({"name": 'Visit London and Paris'})
         new_method = self.client().put('/api/v1/bucketlists/2', data=self.new_details,
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                       content_type='application/json',
+                                       headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 404)
 
     def test_get_bucketlists(self):
@@ -125,8 +124,8 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         new_method = self.client().get('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                       content_type='application/json',
+                                       headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 200)
 
     def test_get_bucketlist_item(self):
@@ -141,12 +140,12 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 201)
         method_new = self.client().get('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                       content_type='application/json',
+                                       headers={'Authorization': self.auth_token})
         self.assertEqual(method_new.status_code, 200)
 
     # def test_get_nonexisting_bucketlist_item(self):
@@ -180,8 +179,8 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         new_method = self.client().get('/api/v1/bucketlists/2', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                       content_type='application/json',
+                                       headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 404)
 
     def test_get_bucketlist_by_id(self):
@@ -195,8 +194,8 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         new_method = self.client().get('/api/v1/bucketlists/1', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                       content_type='application/json',
+                                       headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 200)
 
     def test_create_existing_bucketlists(self):
@@ -211,8 +210,8 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         new_bucketlist = {'name': 'Visit London UK'}
         new_method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": new_bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 409)
 
     def test_delete_bucketlist(self):
@@ -227,12 +226,12 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         new_method = self.client().delete('/api/v1/bucketlists/1', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                          content_type='application/json',
+                                          headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 200)
         result = self.client().get('/api/v1/bucketlists/1', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                   content_type='application/json',
+                                   headers={'Authorization': self.auth_token})
         self.assertEqual(result.status_code, 404)
 
     def test_delete_bucketlist_item(self):
@@ -247,12 +246,12 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 201)
         result = self.client().delete('/api/v1/bucketlists/1/items/1', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                      content_type='application/json',
+                                      headers={'Authorization': self.auth_token})
         self.assertEqual(result.status_code, 200)
 
     def test_delete_nonexisting_bucketlists(self):
@@ -266,8 +265,8 @@ class BucketlistTestCase(unittest.TestCase):
                                     headers={'Authorization': self.auth_token})
         self.assertEqual(method.status_code, 201)
         new_method = self.client().delete('/api/v1/bucketlists/2', data=json.dumps({"name": self.bucketlist}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                          content_type='application/json',
+                                          headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 404)
 
     def test_delete_nonexisting_bucketlist_item(self):
@@ -282,12 +281,12 @@ class BucketlistTestCase(unittest.TestCase):
         self.assertEqual(method.status_code, 201)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                        content_type='application/json',
+                                        headers={'Authorization': self.auth_token})
         self.assertEqual(new_method.status_code, 201)
         result = self.client().delete('/api/v1/bucketlists/1/items/2', data=json.dumps({"name": item}),
-                                    content_type='application/json',
-                                    headers={'Authorization': self.auth_token})
+                                      content_type='application/json',
+                                      headers={'Authorization': self.auth_token})
         self.assertEqual(result.status_code, 404)
 
     def tearDown(self):

@@ -24,19 +24,21 @@ class UserRegistration(MethodView):
                 username = post_data['username']
                 match = re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email)
                 if email is None or password is None:
-                        response = {'message': 'Invalid input. Check email or password'}
-                        return jsonify(response)
+                    response = {
+                        'message': 'Invalid input. Check email or password'}
+                    return jsonify(response)
                 if match:
-                    check_user = User(email=email, password=password, username=username)
+                    check_user = User(
+                        email=email, password=password, username=username)
                     check_user.save()
 
                     response = {
                         'message': 'Successfully registered.'
-                        }
+                    }
                     return make_response(jsonify(response)), 201
                 else:
-                        response = {'message': 'Invalid email input'}
-                        return jsonify(response)
+                    response = {'message': 'Invalid email input'}
+                    return jsonify(response)
             except Exception as error:
                 response = {
                     'message': str(error)
@@ -59,9 +61,11 @@ class UserLogin(MethodView):
         '''
 
         try:
-            fetched_user = User.query.filter_by(email=request.data['email']).first()
+            fetched_user = User.query.filter_by(
+                email=request.data['email']).first()
             if fetched_user and fetched_user.validate_password(request.data['password']):
-                gen_token = fetched_user.get_authentication_token((fetched_user.id))
+                gen_token = fetched_user.get_authentication_token(
+                    (fetched_user.id))
                 if gen_token:
                     response = {
                         'message': 'Log-in Successfull.',
@@ -78,6 +82,7 @@ class UserLogin(MethodView):
                 'message': str(error)
             }
             return make_response(jsonify(response)), 500
+
 
 user_registration = UserRegistration.as_view('register_user')
 user_login = UserLogin.as_view('login_user')

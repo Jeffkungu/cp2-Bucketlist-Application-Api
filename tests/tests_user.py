@@ -2,6 +2,7 @@ import unittest
 import json
 from bucketlistapp import create_app, db
 
+
 class UserAuthTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -22,7 +23,7 @@ class UserAuthTestCase(unittest.TestCase):
     def test_user_registration(self):
         '''Tests if user is registered successfully'''
 
-        method = self.client().post('/auth/register', data=self.user_data)
+        method = self.client().post('/api/v1/auth/register', data=self.user_data)
         result = json.loads(method.data.decode())
         self.assertEqual(result['message'], "Successfully registered.")
         self.assertEqual(method.status_code, 201)
@@ -33,9 +34,9 @@ class UserAuthTestCase(unittest.TestCase):
         Registers a new user, registers another user again using the same details.
         '''
 
-        method = self.client().post('/auth/register', data=self.user_data)
+        method = self.client().post('/api/v1/auth/register', data=self.user_data)
         # self.assertEqual(method.status_code, 201)
-        method_two = self.client().post('/auth/register', data=self.user_data)
+        method_two = self.client().post('/api/v1/auth/register', data=self.user_data)
         # self.assertEqual(method_two.status_code, 202)
         result = json.loads(method_two.data.decode())
         self.assertEqual(result['message'], "Sorry, user already exists.")
@@ -47,9 +48,9 @@ class UserAuthTestCase(unittest.TestCase):
         Checks for the return message after user is successfully logged in.
         '''
 
-        reg_method = self.client().post('/auth/register', data=self.user_data)
+        reg_method = self.client().post('/api/v1/auth/register', data=self.user_data)
         self.assertEqual(reg_method.status_code, 201)
-        login_method = self.client().post('/auth/login', data=self.user_data)
+        login_method = self.client().post('/api/v1/auth/login', data=self.user_data)
         result = json.loads(login_method.data.decode())
         self.assertEqual(result['message'], "Log-in Successfull.")
         self.assertEqual(login_method.status_code, 200)
@@ -66,11 +67,8 @@ class UserAuthTestCase(unittest.TestCase):
             'password': 'johndoe1234'
         }
 
-        login_method = self.client().post('/auth/login', data=uregistered_user)
+        login_method = self.client().post('/api/v1/auth/login', data=uregistered_user)
         result = json.loads(login_method.data.decode())
         self.assertEqual(login_method.status_code, 401)
         self.assertEqual(
             result['message'], "Sorry, login info you submitted might not be registered. Please try registering firts.")
-
-
-

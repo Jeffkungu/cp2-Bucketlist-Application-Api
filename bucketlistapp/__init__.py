@@ -11,6 +11,8 @@ from instance.config import app_config
 # initialize sql-alchemy
 db = SQLAlchemy()
 
+''' '''
+
 
 def create_app(config_name):
     from bucketlistapp.models import Bucketlist, BucketListItem, User
@@ -20,9 +22,8 @@ def create_app(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
-    
     @app.route('/api/v1/bucketlists/', methods=['POST', 'GET'])
-    def create_andget_bucketlists():
+    def create_get_bucketlists():
         '''
         Creates new bucketlist
         Login is required.
@@ -39,7 +40,8 @@ def create_app(config_name):
                 if request.method == 'POST':
                     try:
                         fetch_bucketlists = Bucketlist.query.all()
-                        names = [bucketlst.name for bucketlst in fetch_bucketlists]
+                        names = [
+                            bucketlst.name for bucketlst in fetch_bucketlists]
                         bucketlist_name = str(request.data.get('name', ''))
                         if bucketlist_name:
                             if bucketlist_name in names:
@@ -131,7 +133,7 @@ def create_app(config_name):
                                 "Data": bucket_list
                             }
                             return make_response(jsonify(response)), 200
-                        
+
                         else:
                             response = jsonify({
                                 "message": "There are no bucketlists."
@@ -150,7 +152,8 @@ def create_app(config_name):
                 }
                 return make_response(jsonify(response)), 401
 
-    @app.route('/api/v1/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/api/v1/bucketlists/<int:id>',
+               methods=['GET', 'PUT', 'DELETE'])
     def get_andupdate_bucketlistid(id, **kwargs):
         '''
         Retrieves a bucketlist using its id.
@@ -224,7 +227,8 @@ def create_app(config_name):
                         if bucketlist:
                             bucketlist_name = str(request.data.get('name', ''))
                             if bucketlist_name:
-                                bucketlist_item = BucketListItem(name=bucketlist_name, bucketlist_id=bucketlist.id)
+                                bucketlist_item = BucketListItem(
+                                    name=bucketlist_name, bucketlist_id=bucketlist.id)
                                 bucketlist_item.save()
                                 response = jsonify({
                                     'id': bucketlist_item.item_id,
@@ -313,7 +317,7 @@ def create_app(config_name):
                             'message': str(error)
                         }
                         return make_response(jsonify(response)), 401
-           
+
             else:
                 abort(400)
         else:
@@ -334,14 +338,14 @@ def create_app(config_name):
             return make_response(response), 401
         else:
             get_token = header
-            
+
         if get_token:
             user = User.decode_token(get_token)
             if not isinstance(user, str):
                 bucketlist = Bucketlist.query.filter_by(id=id).first()
                 if not bucketlist:
                     response = jsonify({
-                            "message": "Error, No bucketlist with such ID."
+                        "message": "Error, No bucketlist with such ID."
                     })
                     return make_response(response), 404
                 else:
@@ -350,7 +354,7 @@ def create_app(config_name):
 
                 if not bucketlist_item:
                     response = jsonify({
-                            "message": "Error, No bucketlist item with such ID."
+                        "message": "Error, No bucketlist item with such ID."
                     })
                     return make_response(response), 404
                     # abort(404)
@@ -389,4 +393,3 @@ def create_app(config_name):
     from .user import blueprint
     app.register_blueprint(blueprint)
     return app
-                                        

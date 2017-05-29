@@ -6,7 +6,6 @@ from flask import current_app
 import jwt
 
 
-
 class User(db.Model):
     '''Create User Table'''
 
@@ -17,7 +16,7 @@ class User(db.Model):
     email = db.Column(db.String(250), unique=True)
     password = db.Column(db.String(250))
     bucketlist = db.relationship('Bucketlist', order_by='Bucketlist.id',
-                                  cascade='all, delete-orphan')
+                                 cascade='all, delete-orphan')
 
     def __init__(self, username, email, password):
         """Initialize user with email and password."""
@@ -73,7 +72,7 @@ class User(db.Model):
             return "Expired token. Please login to get a new token"
         except jwt.InvalidTokenError:
             # the token is invalid, return an error string
-            return "Invalid token. Please register or login"        
+            return "Invalid token. Please register or login"
 
 
 class Bucketlist(db.Model):
@@ -87,8 +86,9 @@ class Bucketlist(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    items = db.relationship('BucketListItem', cascade="merge, save-update, delete", uselist=True)
-    created_by = db.Column(db.Integer, db.ForeignKey(User.id))    
+    items = db.relationship(
+        'BucketListItem', cascade="merge, save-update, delete", uselist=True)
+    created_by = db.Column(db.Integer, db.ForeignKey(User.id))
 
     def __init__(self, name, created_by):
         """initialize with name, and user who created the bucketlist."""
@@ -106,14 +106,12 @@ class Bucketlist(db.Model):
     def delete(self):
         '''Deletes existing bucketlist from db'''
         db.session.delete(self)
-        db.session.commit()    
-
+        db.session.commit()
 
     @staticmethod
     def get_all():
         '''Gets all bucketlists created by a specific user in a single query'''
         return Bucketlist.query.filter_by(created_by=user_id)
-
 
     def __repr__(self):
         '''Represents object instance of the model whenever it is queried'''
@@ -135,10 +133,10 @@ class BucketListItem(db.Model):
                               onupdate=datetime.now)
     done = db.Column(db.Boolean, default=False)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey(
-                                                'bucketlists.id',
-                                                onupdate="CASCADE",
-                                                ondelete="CASCADE"),
-                              nullable=False)
+        'bucketlists.id',
+        onupdate="CASCADE",
+        ondelete="CASCADE"),
+        nullable=False)
 
     def __init__(self, name, bucketlist_id):
         self.name = name
@@ -155,15 +153,13 @@ class BucketListItem(db.Model):
     def delete(self):
         '''Deletes existing bucketlist item from db'''
         db.session.delete(self)
-        db.session.commit()    
-
+        db.session.commit()
 
     @staticmethod
     def get_all():
         '''Gets all bucketlists created by a specific user in a single query'''
         return BucketListItem.query.filter_by(bucketlist_id=bucketlist_id)
 
-
     def __repr__(self):
         '''Represents object instance of the model whenever it is queried'''
-        return "<Bucketlist: {}>".format(self.name)                          
+        return "<Bucketlist: {}>".format(self.name)
