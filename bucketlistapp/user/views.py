@@ -34,6 +34,9 @@ class UserRegistration(MethodView):
                         'message': 'Successfully registered.'
                         }
                     return make_response(jsonify(response)), 201
+                else:
+                        response = {'message': 'Invalid email input'}
+                        return jsonify(response)
             except Exception as error:
                 response = {
                     'message': str(error)
@@ -80,11 +83,11 @@ user_registration = UserRegistration.as_view('register_user')
 user_login = UserLogin.as_view('login_user')
 
 blueprint.add_url_rule(
-    '/auth/register',
+    '/api/v1/auth/register',
     view_func=user_registration,
     methods=['POST'])
 
 blueprint.add_url_rule(
-    '/auth/login',
+    '/api/v1/auth/login',
     view_func=user_login,
     methods=['POST'])
