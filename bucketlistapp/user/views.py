@@ -2,6 +2,7 @@ from . import blueprint
 from bucketlistapp.models import User
 from flask.views import MethodView
 from flask import make_response, request, jsonify
+import re
 
 
 class UserRegistration(MethodView):
@@ -9,7 +10,7 @@ class UserRegistration(MethodView):
 
     def post(self):
         '''
-        Checks if user exists in database, 
+        Checks if user exists in database,
         if not creates a new user and adds to the data base.
         '''
 
@@ -21,13 +22,18 @@ class UserRegistration(MethodView):
                 email = post_data['email']
                 password = post_data['password']
                 username = post_data['username']
-                check_user = User(email=email, password=password, username=username)
-                check_user.save()
+                match = re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email)
+                if email is None or password is None:
+                        response = {'message': 'Invalid input. Check email or password'}
+                        return jsonify(response)
+                if match:
+                    check_user = User(email=email, password=password, username=username)
+                    check_user.save()
 
-                response = {
-                    'message': 'Successfully registered.'
-                    }
-                return make_response(jsonify(response)), 201
+                    response = {
+                        'message': 'Successfully registered.'
+                        }
+                    return make_response(jsonify(response)), 201
             except Exception as error:
                 response = {
                     'message': str(error)
@@ -37,7 +43,7 @@ class UserRegistration(MethodView):
             response = {
                 'message': 'Sorry, user already exists.'
             }
-            return make_response(jsonify(response)), 202
+            return make_response(jsonify(response)), 409
 
 
 class UserLogin(MethodView):
