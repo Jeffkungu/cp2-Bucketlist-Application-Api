@@ -1,6 +1,5 @@
-import os.path
+import os
 import sys
-
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
 from flask import make_response, request, jsonify, abort
@@ -46,7 +45,7 @@ def create_app(config_name):
                         if bucketlist_name:
                             if bucketlist_name in names:
                                 response = jsonify({
-                                    "message": "The named bucketlist already exists"
+                                    "message": "Bucketlist already exists"
                                 })
                                 return make_response(response), 409
 
@@ -64,7 +63,7 @@ def create_app(config_name):
                             return make_response(response), 201
                         else:
                             response = jsonify({
-                                "message": "Name of bucketlist is not provided."
+                                "message": "Name is not provided."
                             })
                             return make_response(response), 400
                     except Exception as error:
@@ -79,8 +78,14 @@ def create_app(config_name):
                             page = int(request.args.get("page"))
                         else:
                             page = 1
-                        if request.args.get("limit") and int(request.args.get("limit")) < 100:
-                            limit = int(request.args.get("limit"))
+                        if request.args.get("limit"):
+                            if int(request.args.get("limit")) < 100:
+                                limit = int(request.args.get("limit"))
+                            else:
+                                response = jsonify({
+                                    "message": "Limit should be < 100."
+                                })
+                                return make_response(response), 400
                         else:
                             limit = 20
                         fetch_bucketlists_object = Bucketlist.query.filter_by(
@@ -101,8 +106,11 @@ def create_app(config_name):
 
                         if request.args.get('q'):
                             q = str(request.args.get('q')).lower()
-                            fetch_bucketlists_object = Bucketlist.query.filter(Bucketlist.name.ilike('%{}%'.format(q))).filter_by(
-                                created_by=user).paginate(page, limit, False)
+                            fetch_bucketlists_object = Bucketlist.query.filter(
+                                Bucketlist.name.ilike(
+                                    '%{}%'.format(q))).filter_by(
+                                    created_by=user).paginate(
+                                        page, limit, False)
 
                         if fetch_bucketlists:
                             bucket_list = []
@@ -114,7 +122,8 @@ def create_app(config_name):
                                             'id': item.item_id,
                                             'name': item.name,
                                             'date_created': item.date_created,
-                                            'date_modified': item.date_modified,
+                                            'date_modified':
+                                            item.date_modified,
                                             'done': item.done
                                         }
                                         items_list.append(item_data)
@@ -199,7 +208,8 @@ def create_app(config_name):
 
                 if request.method == 'DELETE':
                     bucketlist.delete()
-                    return {"message": "bucketlist {} was successfully deleted.".format(bucketlist.id)}, 200
+                    return {"message": "bucketlist {} was deleted."
+                            .format(bucketlist.id)}, 200
 
             else:
                 message = user
@@ -228,20 +238,23 @@ def create_app(config_name):
                             bucketlist_name = str(request.data.get('name', ''))
                             if bucketlist_name:
                                 bucketlist_item = BucketListItem(
-                                    name=bucketlist_name, bucketlist_id=bucketlist.id)
+                                    name=bucketlist_name,
+                                    bucketlist_id=bucketlist.id)
                                 bucketlist_item.save()
                                 response = jsonify({
                                     'id': bucketlist_item.item_id,
                                     'name': bucketlist_item.name,
-                                    'date_created': bucketlist_item.date_created,
-                                    'date_modified': bucketlist_item.date_modified,
+                                    'date_created':
+                                    bucketlist_item.date_created,
+                                    'date_modified':
+                                    bucketlist_item.date_modified,
                                     'done': bucketlist_item.done
                                 })
                                 return make_response(response), 201
 
                             else:
                                 response = jsonify({
-                                    "message": "No name, please give the item a name."
+                                    "message": "Error, name the item."
                                 })
                                 return make_response(response), 400
                         else:
@@ -257,13 +270,20 @@ def create_app(config_name):
                             page = int(request.args.get("page"))
                         else:
                             page = 1
-                        if request.args.get("limit") and int(request.args.get("limit")) < 100:
-                            limit = int(request.args.get("limit"))
+                        if request.args.get("limit"):
+                            if int(request.args.get("limit")) < 100:
+                                limit = int(request.args.get("limit"))
+                            else:
+                                response = jsonify({
+                                    "message": "Limit should be < 100."
+                                })
+                                return make_response(response), 400
                         else:
                             limit = 20
 
                         fetch_bucketlists_object = Bucketlist.query.filter_by(
-                            created_by=user).paginate(page, limit, False)
+                            created_by=user).paginate(
+                                page, limit, False)
                         fetch_bucketlists = fetch_bucketlists_object.items
 
                         if fetch_bucketlists_object.has_next:
@@ -280,8 +300,11 @@ def create_app(config_name):
 
                         if request.args.get('q'):
                             q = str(request.args.get('q')).lower()
-                            fetch_bucketlists_object = Bucketlist.query.filter(Bucketlist.name.ilike('%{}%'.format(q))).filter_by(
-                                created_by=user).paginate(page, limit, False)
+                            fetch_bucketlists_object = Bucketlist.query.filter(
+                                Bucketlist.name.ilike(
+                                    '%{}%'.format(q))).filter_by(
+                                        created_by=user).paginate(
+                                            page, limit, False)
 
                         if fetch_bucketlists:
                             for bucketlist in fetch_bucketlists:
@@ -292,7 +315,8 @@ def create_app(config_name):
                                             'id': item.item_id,
                                             'name': item.name,
                                             'date_created': item.date_created,
-                                            'date_modified': item.date_modified,
+                                            'date_modified':
+                                            item.date_modified,
                                             'done': item.done
                                         }
                                         items_list.append(item_data)
@@ -301,7 +325,8 @@ def create_app(config_name):
                                         "Previouspage": previouspage,
                                         "Data": items_list
                                     }
-                                    return make_response(jsonify(response)), 200
+                                    return make_response(
+                                        jsonify(response)), 200
                                 else:
                                     response = jsonify({
                                         "message": "There are no items."
@@ -323,7 +348,8 @@ def create_app(config_name):
         else:
             abort(400)
 
-    @app.route('/api/v1/bucketlists/<int:id>/items/<int:item_id>', methods=['PUT', 'DELETE'])
+    @app.route('/api/v1/bucketlists/<int:id>/items/<int:item_id>',
+               methods=['PUT', 'DELETE'])
     def get_andupdate_bucketlistsitems(id, item_id, **kwargs):
         '''
         Retrieves a bucketlist item using its id.
