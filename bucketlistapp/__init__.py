@@ -104,13 +104,17 @@ def create_app(config_name):
                         else:
                             previouspage = None
 
-                        if request.args.get('q'):
+                        name = request.args.get('q')
+                        if name:
                             q = str(request.args.get('q')).lower()
                             fetch_bucketlists_object = Bucketlist.query.filter(
-                                Bucketlist.name.ilike(
-                                    '%{}%'.format(q))).filter_by(
-                                    created_by=user).paginate(
-                                        page, limit, False)
+                                Bucketlist.name.ilike('%{}%'.format(q))
+                                ).filter_by(created_by=user).paginate(page, limit, False)
+                            if not fetch_bucketlists_object:
+                                response = jsonify({
+                                    "message": "Error, No such name."
+                                })
+                                return make_response(response), 400
 
                         if fetch_bucketlists:
                             bucket_list = []
