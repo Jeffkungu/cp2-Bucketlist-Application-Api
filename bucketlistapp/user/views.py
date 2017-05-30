@@ -63,18 +63,24 @@ class UserLogin(MethodView):
         try:
             fetched_user = User.query.filter_by(
                 email=request.data['email']).first()
-            if fetched_user and fetched_user.validate_password(request.data['password']):
-                gen_token = fetched_user.get_authentication_token(
-                    (fetched_user.id))
-                if gen_token:
-                    response = {
-                        'message': 'Log-in Successfull.',
-                        'access_token': gen_token.decode()
-                    }
-                    return make_response(jsonify(response)), 200
+            if fetched_user:
+                if fetched_user.validate_password(request.data['password']):
+                    gen_token = fetched_user.get_authentication_token(
+                        (fetched_user.id))
+                    if gen_token:
+                        response = {
+                            'message': 'Log-in Successfull.',
+                            'access_token': gen_token.decode()
+                        }
+                        return make_response(jsonify(response)), 200
+                    else:
+                        response = {
+                            'message': 'Error during token generation.'
+                        }
+                        return make_response(jsonify(response)), 401
             else:
                 response = {
-                    'message': 'Sorry, login info you submitted might not be registered. Please try registering firts.'
+                    'message': 'Invalid. Email or Password.'
                 }
                 return make_response(jsonify(response)), 401
         except Exception as error:
