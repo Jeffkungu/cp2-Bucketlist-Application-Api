@@ -6,3 +6,4 @@ deployment:
     branch: develop
     heroku:
       appname: blooming-badlands-87252
+
