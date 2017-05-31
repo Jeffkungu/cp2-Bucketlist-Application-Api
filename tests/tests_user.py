@@ -83,4 +83,4 @@ class UserAuthTestCase(unittest.TestCase):
         result = json.loads(login_method.data.decode())
         self.assertEqual(login_method.status_code, 401)
         self.assertEqual(
-            result['message'], "Sorry, Please try registering firts.")
+            result['message'], "Invalid. Email or Password.")
