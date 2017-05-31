@@ -5,4 +5,4 @@ deployment:
   staging:
     branch: develop
     heroku:
-      appname: foo-bar-123
+      appname: blooming-badlands-87252
