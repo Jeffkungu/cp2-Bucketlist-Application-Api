@@ -148,26 +148,6 @@ class BucketlistTestCase(unittest.TestCase):
                                        headers={'Authorization': self.auth_token})
         self.assertEqual(method_new.status_code, 200)
 
-    # def test_get_nonexisting_bucketlist_item(self):
-    #     """
-    #     Tests if API can get an item that does not exist from bucketlist (GET request).
-    #     Creates bucketlist and tests for (201-created) status code response
-    #     Fetches an item that was not added to the bucket list and checks for (404-not found) status code
-    #     """
-    #     method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
-    #                                 content_type='application/json',
-    #                                 headers={'Authorization': self.auth_token})
-    #     self.assertEqual(method.status_code, 201)
-    #     item = {"name": "Train"}
-    #     new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
-    #                                 content_type='application/json',
-    #                                 headers={'Authorization': self.auth_token})
-    #     self.assertEqual(new_method.status_code, 201)
-    #     method_new = self.client().get('/api/v1/bucketlists/2/items', data=json.dumps({"name": item}),
-    #                                 content_type='application/json',
-    #                                 headers={'Authorization': self.auth_token})
-    #     self.assertEqual(method_new.status_code, 400)
-
     def test_get_nonexisting_bucketlists(self):
         """
         Tests if API can get a bucketlist that does not exist (GET request).
