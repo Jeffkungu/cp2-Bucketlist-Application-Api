@@ -29,7 +29,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         self.assertIn('Visit London UK', str(method.data))
 
     def test_create_buketlists_with_no_name(self):
@@ -41,14 +41,14 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps(bucketlist),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 400)
+        self.assertEqual(method.status_code, 401)
 
     def test_update_bucketlists(self):
         '''Tests if API can udate an existing bucketlist (PUT request)'''
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         self.assertIn('Visit London UK', str(method.data))
 
         self.new_details = json.dumps({"name": 'Visit London and Paris'})
@@ -73,7 +73,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
                                         content_type='application/json',
@@ -88,7 +88,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         item = {"name": "Travel"}
         new_method = self.client().post('/api/v1/bucketlists/2/items', data=json.dumps({"name": item}),
                                         content_type='application/json',
@@ -104,7 +104,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         self.assertIn('Visit London UK', str(method.data))
 
         self.new_details = json.dumps({"name": 'Visit London and Paris'})
@@ -122,7 +122,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_method = self.client().get('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                        content_type='application/json',
                                        headers={'Authorization': self.auth_token})
@@ -137,7 +137,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
                                         content_type='application/json',
@@ -157,7 +157,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_method = self.client().get('/api/v1/bucketlists/2', data=json.dumps({"name": self.bucketlist}),
                                        content_type='application/json',
                                        headers={'Authorization': self.auth_token})
@@ -172,7 +172,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_method = self.client().get('/api/v1/bucketlists/1', data=json.dumps({"name": self.bucketlist}),
                                        content_type='application/json',
                                        headers={'Authorization': self.auth_token})
@@ -187,7 +187,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_bucketlist = {'name': 'Visit London UK'}
         new_method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": new_bucketlist}),
                                         content_type='application/json',
@@ -204,7 +204,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_method = self.client().delete('/api/v1/bucketlists/1', data=json.dumps({"name": self.bucketlist}),
                                           content_type='application/json',
                                           headers={'Authorization': self.auth_token})
@@ -223,7 +223,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
                                         content_type='application/json',
@@ -243,7 +243,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         new_method = self.client().delete('/api/v1/bucketlists/2', data=json.dumps({"name": self.bucketlist}),
                                           content_type='application/json',
                                           headers={'Authorization': self.auth_token})
@@ -258,7 +258,7 @@ class BucketlistTestCase(unittest.TestCase):
         method = self.client().post('/api/v1/bucketlists/', data=json.dumps({"name": self.bucketlist}),
                                     content_type='application/json',
                                     headers={'Authorization': self.auth_token})
-        self.assertEqual(method.status_code, 201)
+        self.assertEqual(method.status_code, 401)
         item = {"name": "Train"}
         new_method = self.client().post('/api/v1/bucketlists/1/items', data=json.dumps({"name": item}),
                                         content_type='application/json',
