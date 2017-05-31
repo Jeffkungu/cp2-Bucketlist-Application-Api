@@ -1,3 +1,8 @@
 test:
   override:
     - echo "test"
+deployment:
+  staging:
+    branch: develop
+    heroku:
+      appname: foo-bar-123
