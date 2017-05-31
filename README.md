@@ -1,7 +1,5 @@
 # cp2-Bucketlist-Application-Api
-[![Coverage Status](https://coveralls.io/repos/github/Jeffkungu/cp2-Bucketlist-Application-Api/badge.svg?branch=develop)](https://coveralls.io/github/Jeffkungu/cp2-Bucketlist-Application-Api?branch=develop)
-{<img src="https://coveralls.io/repos/github/Jeffkungu/cp2-Bucketlist-Application-Api/badge.svg?branch=develop" alt="Coverage Status" />}[https://coveralls.io/github/Jeffkungu/cp2-Bucketlist-Application-Api?branch=develop]
-
+[![Coverage Status](https://coveralls.io/repos/github/Jeffkungu/cp2-Bucketlist-Application-Api/badge.svg?branch=master)](https://coveralls.io/github/Jeffkungu/cp2-Bucketlist-Application-Api?branch=master)
 
 According to Merriam-Webster Dictionary, a Bucket List is a list of things that one has not done before but wants to do before dying. This app creates an API for an online Bucket List service using Flask.
 
