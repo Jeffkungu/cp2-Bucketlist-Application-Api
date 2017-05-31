@@ -1,9 +1,3 @@
 test:
   override:
     - echo "test"
-deployment:
-  staging:
-    branch: develop
-    heroku:
-      appname: blooming-badlands-87252
-
